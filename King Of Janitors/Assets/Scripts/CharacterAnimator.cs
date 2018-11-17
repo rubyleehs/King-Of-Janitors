@@ -22,12 +22,12 @@ public class CharacterAnimator : MonoBehaviour
 
     private bool isMoving;
 
+    new Transform transform;
     private float t;
     private int currentFrame; // 4 states 0 - 3
 
     public void Awake()
     {
-        spriteRenderer = GetComponent<SpriteRenderer>();
         Initialize();
     }
 
@@ -63,6 +63,8 @@ public class CharacterAnimator : MonoBehaviour
 
     public void Initialize()
     {
+        if(transform == null) transform = this.GetComponent<Transform>();
+        if(spriteRenderer == null) spriteRenderer = GetComponent<SpriteRenderer>();
         Halt();
     }
 

@@ -5,7 +5,9 @@ using UnityEngine;
 [RequireComponent (typeof(Rigidbody2D))]
 public class PlayerManager : MonoBehaviour{
 
-    public CharacterAnimator animator;
+    public CharacterAnimator[] animators;
+    public Transform bodyTransform;
+    public Transform[] legsTransform;
 
     public float walkingSpeed = 1.0f;
     public float acceleration;
@@ -54,6 +56,7 @@ public class PlayerManager : MonoBehaviour{
     {
         Vector2 mouseDelta = MainCameraLogic.mousePos - (Vector2)transform.position;
         lookAngle = Mathf.Atan2(mouseDelta.y, mouseDelta.x) * Mathf.Rad2Deg;
+        bodyTransform.eulerAngles = new Vector3(0, 0, lookAngle);
     }
 
     void Move(float dt)
@@ -65,9 +68,26 @@ public class PlayerManager : MonoBehaviour{
 
         velocity = Vector2.ClampMagnitude(velocity - velocity * (velocityLoss * dt) + input * acceleration, walkingSpeed);
         moveAngle = Mathf.Atan2(velocity.y, velocity.x) * Mathf.Rad2Deg;
-        transform.eulerAngles = new Vector3(0, 0, moveAngle);
+        //transform.eulerAngles = new Vector3(0, 0, moveAngle);
 
-        if (Mathf.Abs(h) < Mathf.Epsilon && Mathf.Abs(v) < Mathf.Epsilon) animator.Halt();
-        else animator.Move(transform.position, dt);
+        for (int i = 0; i < legsTransform.Length; i++)
+        {
+            legsTransform[i].eulerAngles = Vector3.forward * moveAngle;
+        }
+
+        if (Mathf.Abs(h) < Mathf.Epsilon && Mathf.Abs(v) < Mathf.Epsilon)
+        {
+            for (int i = 0; i < animators.Length; i++)
+            {
+                animators[i].Halt();
+            }
+        }
+        else
+        {
+            for (int i = 0; i < animators.Length; i++)
+            {
+                animators[i].Move(transform.position, dt);
+            }
+        }
     }
 }
